@@ -1,12 +1,12 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ page import= "com.oreilly.servlet.*" %>
-<%@ page import= "com.oreilly.servlet.multipart.*" %>
+<%@ page import= "com.oreilly.servlet.multipart.*" %><!-- com.oreilly.servlet.multipart.* 패키지의 MultipartRequest 클래스 -->
 <%@ page import= "java.sql.*" %>
 <%@ page import= "java.io.*" %>
 <%@ page import= "vo.*" %>
 <%
 	String dir = request.getServletContext().getRealPath("/upload");
-	System.out.println(dir);
+	System.out.println("업로드할 폴더(dir) : "+dir);
 	
 	int max = 10 * 1024 * 1024;
 	MultipartRequest mRequest = new MultipartRequest(request, dir, max, "utf-8", new DefaultFileRenamePolicy());
@@ -36,14 +36,15 @@
 			String saveFilename = mRequest.getFilesystemName("boardFile");
 			File f = new File(dir+"/"+saveFilename);
 			if(f.exists()){
-				f.delete();
+				f.delete(); // pdf 파일이 아니면 파일 삭제
 				System.out.println(saveFilename+"파일삭제");
 				}
-			} else { //PDF파일이면 새로 업로드 후 db수정(update) 후 이전파일 삭제
+			} else { //PDF파일이면 새로 업로드 후 이전파일 삭제 및 DB수정(update)
 				String type = mRequest.getContentType("boardFile");
 				String originFilename = mRequest.getOriginalFileName("boardFile");
 				String saveFilename = mRequest.getFilesystemName("boardFile");
 				
+				// boardfile 객체에 담아 사용
 				BoardFile boardFile = new BoardFile();
 				boardFile.setBoardFileNo(boardFileNo);
 				boardFile.setType(type);
@@ -65,6 +66,7 @@
 				if(f.exists()){
 					f.delete();
 				}
+				
 				// 2)수정된 파일의 정보로 DB를 수정
 				String boardFileSql = "UPDATE board_file SET origin_filename=?, save_filename=? where board_file_no=?";
 				PreparedStatement boardFileStmt = conn.prepareStatement(boardFileSql);

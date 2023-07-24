@@ -1,4 +1,7 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
+<%
+	String logInId = (String)session.getAttribute("loginMemberId");
+%>
 <!DOCTYPE html>
 <html>
 <head>
@@ -27,8 +30,8 @@
 	</form>
 		<%
 			} else {
-				String logInId = (String)session.getAttribute("loginMemberId");
 		%>
+			<a href="<%=request.getContextPath()%>/boardList.jsp">PDF 자료 목록</a><a href="<%=request.getContextPath()%>/logout.jsp"> 로그아웃</a>
 			<table>
 				<tr>
 					<td><%=logInId%>님 반값습니다.</td>
